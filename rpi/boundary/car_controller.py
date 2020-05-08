@@ -12,13 +12,17 @@ class CarController:
         self._imageAnalysisService = image_analysis_service
         self._flaskApp = flask_app
         self._flaskApp.route("/status", methods=['GET'])(self.status)
+        self._flaskApp.route("/run", methods=['PUT'])(self.run)
 
     def status(self):
         return jsonify(status=str(self._car.status.name))
 
     def run(self):
         for i in range(5):
+            image = 'img_' + str(i) + '.png'
+            self._car.take_picture(image)
+            self._imageAnalysisService.upload_image(image)
+            self._imageAnalysisService.detect_traffic_light(image)
             self._car.move_forward()
-            self._car.stop()
-            self._car.take_picture('img_' + str(i) + '.png')
             time.sleep(1)
+        self._car.stop()
