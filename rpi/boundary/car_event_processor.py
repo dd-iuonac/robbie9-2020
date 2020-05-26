@@ -1,10 +1,14 @@
+from socket import SocketIO
+
 from pydispatch import dispatcher
 
 from car.car_status import CarStatus
 
 
 class CarEventProcessor:
-    def __init__(self):
+    def __init__(self, socket_io: SocketIO):
+        self._socketIO: SocketIO = socket_io
+
         dispatcher.connect(self.running, signal=CarStatus.RUNNING, sender=dispatcher.Any)
 
         dispatcher.connect(self.stopped, signal=CarStatus.STOPPED, sender=dispatcher.Any)
@@ -24,28 +28,28 @@ class CarEventProcessor:
         dispatcher.connect(self.move_forward, signal=CarStatus.MOVE_FORWARD, sender=dispatcher.Any)
 
     def take_picture(self):
-        print('took picture')
+        self._socketIO.emit('take_picture', broadcast=True, namespace="/test")
 
     def uploading_image(self):
-        print('uploaded image')
+        self._socketIO.emit('uploading_image', broadcast=True, namespace='/test')
 
     def traffic_light_detected(self):
-        print('detected traffic light')
+        self._socketIO.emit('traffic_detected', broadcast=True, namespace='/test')
 
     def traffic_light_not_present(self):
-        print('traffic light not detected')
+        self._socketIO.emit('traffic_not_detected', broadcast=True, namespace='/test')
 
     def move_forward(self):
-        print('moving forward')
+        self._socketIO.emit('moving_forward', broadcast=True, namespace='/test')
 
     def running(self):
-        print('running')
+        self._socketIO.emit('running', broadcast=True, namespace='/test')
 
     def stopped(self):
-        print('stopped')
+        self._socketIO.emit('stopped', broadcast=True, namespace='/test')
 
     def image_uploaded(self):
-        print('image uploaded')
+        self._socketIO.emit('image_uploaded', broadcast=True, namespace='/test')
 
     def analyse_image(self):
-        print('image analize')
+        self._socketIO.emit('analyse_image', broadcast=True, namespace='/test')
